@@ -14,6 +14,7 @@ const AdminBeforeAfter = lazy(() =>
   import("@/admin/pages/AdminBeforeAfter").then((m) => ({ default: m.AdminBeforeAfter }))
 );
 const AdminReviews = lazy(() => import("@/admin/pages/AdminReviews").then((m) => ({ default: m.AdminReviews })));
+const AdminInstagram = lazy(() => import("@/admin/pages/AdminInstagram").then((m) => ({ default: m.AdminInstagram })));
 const AdminLocations = lazy(() => import("@/admin/pages/AdminLocations").then((m) => ({ default: m.AdminLocations })));
 const AdminSettings = lazy(() => import("@/admin/pages/AdminSettings").then((m) => ({ default: m.AdminSettings })));
 const ProtectedRoute = lazy(() => import("@/admin/ProtectedRoute").then((m) => ({ default: m.ProtectedRoute })));
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="gallery" element={<AdminGallery />} />
         <Route path="before-after" element={<AdminBeforeAfter />} />
         <Route path="reviews" element={<AdminReviews />} />
+        <Route path="instagram" element={<AdminInstagram />} />
         <Route path="locations" element={<AdminLocations />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>

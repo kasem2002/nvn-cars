@@ -3,8 +3,12 @@ dist/
 build/
 .env
 *.local
+*.tsbuildinfo
 
 server/prisma/dev.db
 server/prisma/dev.db-journal
+
+server/uploads/*
+!server/uploads/.gitkeep
 
 .DS_Store

@@ -9,6 +9,7 @@ const NAV = [
   { to: "/admin/gallery", label: "Gallery" },
   { to: "/admin/before-after", label: "Before / After" },
   { to: "/admin/reviews", label: "Reviews" },
+  { to: "/admin/instagram", label: "Instagram" },
   { to: "/admin/locations", label: "Locations" },
   { to: "/admin/settings", label: "Settings" },
 ];

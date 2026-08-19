@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FormField, inputClass } from "@/admin/components/FormField";
+import { ImageUpload } from "@/admin/components/ImageUpload";
 import { Modal } from "@/admin/components/Modal";
 import {
   useCreateGalleryItemMutation,
@@ -92,9 +93,7 @@ function GalleryModal({
   return (
     <Modal title={item ? "Edit Image" : "New Image"} onClose={onClose}>
       <div className="space-y-4">
-        <FormField label="Image URL">
-          <input className={inputClass} value={form.image} onChange={(e) => set("image", e.target.value)} />
-        </FormField>
+        <ImageUpload label="Image" value={form.image} onChange={(url) => set("image", url)} aspect="aspect-square" />
         <FormField label="Caption (English)">
           <input className={inputClass} value={form.captionEn ?? ""} onChange={(e) => set("captionEn", e.target.value)} />
         </FormField>

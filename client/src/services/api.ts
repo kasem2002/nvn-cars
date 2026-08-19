@@ -177,6 +177,15 @@ export const api = createApi({
       query: () => "/overview",
       providesTags: ["Overview"],
     }),
+
+    // Uploads
+    uploadImage: builder.mutation<{ url: string }, File>({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return { url: "/uploads", method: "POST", body: formData };
+      },
+    }),
   }),
 });
 
@@ -214,4 +223,5 @@ export const {
   useGetSettingsQuery,
   useUpdateSettingsMutation,
   useGetOverviewQuery,
+  useUploadImageMutation,
 } = api;

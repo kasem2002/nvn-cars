@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FormField, inputClass } from "@/admin/components/FormField";
+import { ImageUpload } from "@/admin/components/ImageUpload";
 import { Modal } from "@/admin/components/Modal";
 import {
   useCreateReviewMutation,
@@ -119,7 +120,14 @@ function ReviewModal({
 
   return (
     <Modal title={review ? "Edit Review" : "New Review"} onClose={onClose} wide>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <ImageUpload
+        label="Customer Photo (optional)"
+        value={form.customerImage}
+        onChange={(url) => set("customerImage", url)}
+        aspect="aspect-square"
+      />
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Customer Name">
           <input className={inputClass} value={form.customerName} onChange={(e) => set("customerName", e.target.value)} />
         </FormField>
@@ -128,9 +136,6 @@ function ReviewModal({
         </FormField>
         <FormField label="Rating (1-5)">
           <input type="number" min={1} max={5} className={inputClass} value={form.rating} onChange={(e) => set("rating", Number(e.target.value))} />
-        </FormField>
-        <FormField label="Customer Image URL">
-          <input className={inputClass} value={form.customerImage ?? ""} onChange={(e) => set("customerImage", e.target.value)} />
         </FormField>
         <FormField label="Review (English)">
           <textarea className={inputClass} rows={3} value={form.reviewEn} onChange={(e) => set("reviewEn", e.target.value)} />

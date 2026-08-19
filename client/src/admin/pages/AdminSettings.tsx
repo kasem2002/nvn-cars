@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { FormField, inputClass } from "@/admin/components/FormField";
+import { ImageUpload } from "@/admin/components/ImageUpload";
 import { useGetSettingsQuery, useUpdateSettingsMutation } from "@/services/api";
 import { SiteSettings } from "@/types";
 
@@ -31,12 +32,8 @@ export function AdminSettings() {
       <h1 className="text-2xl font-semibold text-white">Website Settings</h1>
 
       <Section title="Branding">
-        <FormField label="Logo URL">
-          <input className={inputClass} value={form.logo ?? ""} onChange={(e) => set("logo", e.target.value)} />
-        </FormField>
-        <FormField label="Favicon URL">
-          <input className={inputClass} value={form.favicon ?? ""} onChange={(e) => set("favicon", e.target.value)} />
-        </FormField>
+        <ImageUpload label="Logo" value={form.logo} onChange={(url) => set("logo", url)} aspect="aspect-[3/1]" />
+        <ImageUpload label="Favicon" value={form.favicon} onChange={(url) => set("favicon", url)} aspect="aspect-square" />
       </Section>
 
       <Section title="Contact">

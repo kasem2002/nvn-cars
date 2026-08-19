@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FormField, inputClass } from "@/admin/components/FormField";
+import { ImageUpload } from "@/admin/components/ImageUpload";
 import { Modal } from "@/admin/components/Modal";
 import {
   useCreateServiceMutation,
@@ -141,7 +142,9 @@ function ServiceModal({
 
   return (
     <Modal title={service ? "Edit Service" : "New Service"} onClose={onClose} wide>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <ImageUpload label="Service Image" value={form.image} onChange={(url) => set("image", url)} />
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Name (English)">
           <input className={inputClass} value={form.nameEn} onChange={(e) => set("nameEn", e.target.value)} />
         </FormField>
@@ -153,9 +156,6 @@ function ServiceModal({
         </FormField>
         <FormField label="Description (Arabic)">
           <textarea dir="rtl" className={inputClass} rows={2} value={form.descriptionAr} onChange={(e) => set("descriptionAr", e.target.value)} />
-        </FormField>
-        <FormField label="Image URL">
-          <input className={inputClass} value={form.image ?? ""} onChange={(e) => set("image", e.target.value)} />
         </FormField>
         <FormField label="Category">
           <input className={inputClass} value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="ppf, nano-ceramic, tint…" />

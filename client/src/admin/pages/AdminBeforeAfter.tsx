@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FormField, inputClass } from "@/admin/components/FormField";
+import { ImageUpload } from "@/admin/components/ImageUpload";
 import { Modal } from "@/admin/components/Modal";
 import {
   useCreateBeforeAfterItemMutation,
@@ -111,17 +112,16 @@ function BeforeAfterModal({
   return (
     <Modal title={item ? "Edit Project" : "New Project"} onClose={onClose} wide>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <ImageUpload label="Before Image" value={form.beforeImage} onChange={(url) => set("beforeImage", url)} />
+        <ImageUpload label="After Image" value={form.afterImage} onChange={(url) => set("afterImage", url)} />
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Vehicle Name">
           <input className={inputClass} value={form.vehicleName} onChange={(e) => set("vehicleName", e.target.value)} />
         </FormField>
         <FormField label="Vehicle Category">
           <input className={inputClass} value={form.vehicleCategory ?? ""} onChange={(e) => set("vehicleCategory", e.target.value)} />
-        </FormField>
-        <FormField label="Before Image URL">
-          <input className={inputClass} value={form.beforeImage} onChange={(e) => set("beforeImage", e.target.value)} />
-        </FormField>
-        <FormField label="After Image URL">
-          <input className={inputClass} value={form.afterImage} onChange={(e) => set("afterImage", e.target.value)} />
         </FormField>
         <FormField label="Service Name">
           <input className={inputClass} value={form.serviceName ?? ""} onChange={(e) => set("serviceName", e.target.value)} />
