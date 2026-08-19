@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "title": "NVN Cars — Premium Automotive Care",
+    "description": "NVN Cars offers premium PPF, nano ceramic, tinting, polishing, and detailing services in Al Mansour, Baghdad."
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "experience": "Experience",
+    "gallery": "Gallery",
+    "beforeAfter": "Before / After",
+    "reviews": "Reviews",
+    "location": "Location",
+    "book": "Book Now"
+  },
+  "hero": {
+    "eyebrow": "Baghdad · Al Mansour",
+    "titleLine1": "YOUR CAR.",
+    "titleLine2": "YOUR STANDARD.",
+    "subtitle": "NVN Cars is a premium automotive care center dedicated to protecting, refining, and elevating exceptional vehicles.",
+    "cta1": "Book Your Service",
+    "cta2": "Explore Services",
+    "scroll": "Scroll"
+  },
+  "brand": {
+    "line1": "Care for the",
+    "line2": "exceptional."
+  },
+  "services": {
+    "eyebrow": "What We Do",
+    "title": "Services",
+    "subtitle": "Every service is carried out with precision, using premium materials and a meticulous eye for detail.",
+    "cta": "Book This Service",
+    "viewAll": "View All Services"
+  },
+  "selector": {
+    "eyebrow": "Personalized",
+    "title": "Find the right service for your car",
+    "subtitle": "Tell us about your vehicle and your goal — we'll recommend the right NVN treatment.",
+    "vehicleLabel": "Vehicle Type",
+    "goalLabel": "Your Main Goal",
+    "vehicles": {
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "sports": "Sports Car",
+      "luxury": "Luxury Sedan",
+      "super": "Supercar",
+      "other": "Other"
+    },
+    "goals": {
+      "protectPaint": "Protect My Paint",
+      "improveAppearance": "Improve Appearance",
+      "protectHeat": "Protect From Heat",
+      "interior": "Interior Restoration",
+      "customize": "Customize My Car",
+      "fullCare": "Full Car Care"
+    },
+    "resultTitle": "Recommended for you",
+    "noSelection": "Choose a vehicle type and a goal to see recommendations."
+  },
+  "about": {
+    "eyebrow": "The NVN Standard",
+    "title": "More Than Car Care.",
+    "body": "NVN Cars focuses on precision, protection, detailing, and customization — maintaining the appearance and integrity of premium vehicles the way their owners expect.",
+    "stat1Label": "Precision",
+    "stat1Value": "Every Panel",
+    "stat2Label": "Focus",
+    "stat2Value": "Protection First",
+    "stat3Label": "Services",
+    "stat3Value": "10 Specialties",
+    "stat4Label": "Standard",
+    "stat4Value": "Premium Only"
+  },
+  "beforeAfter": {
+    "eyebrow": "The Difference",
+    "title": "Before / After",
+    "subtitle": "Drag to compare. See the NVN transformation for yourself.",
+    "empty": "Before/after cases are added by the NVN team as projects are completed. Check back soon."
+  },
+  "gallery": {
+    "eyebrow": "Our Work",
+    "title": "Gallery",
+    "subtitle": "A closer look at vehicles cared for by NVN.",
+    "categories": {
+      "all": "All",
+      "ppf": "PPF",
+      "nano-ceramic": "Nano Ceramic",
+      "polish": "Polish",
+      "tint": "Tint",
+      "interior": "Interior",
+      "customization": "Customization"
+    },
+    "empty": "Gallery photography is being curated. New work will appear here soon."
+  },
+  "reviews": {
+    "eyebrow": "Client Word",
+    "title": "Reviews",
+    "subtitle": "What NVN clients say about their experience.",
+    "empty": "Genuine client reviews will appear here as they are collected."
+  },
+  "instagram": {
+    "eyebrow": "@nvn.cars",
+    "title": "On Instagram",
+    "subtitle": "Follow NVN Cars for the latest work and behind-the-scenes detail.",
+    "cta": "Follow on Instagram",
+    "empty": "Recent Instagram posts will appear here once connected."
+  },
+  "location": {
+    "eyebrow": "Visit Us",
+    "title": "Location",
+    "hours": "Working Hours",
+    "hoursValue": "Set by the NVN team in the dashboard",
+    "directions": "Get Directions (Waze)",
+    "call": "Call Us",
+    "whatsapp": "WhatsApp"
+  },
+  "booking": {
+    "eyebrow": "Reserve Your Slot",
+    "title": "Book Your Service",
+    "subtitle": "A five-step reservation, made for people who value their time.",
+    "open": "Book Your Service",
+    "step1": { "label": "Choose Service", "title": "Which service does your car need?" },
+    "step2": { "label": "Your Vehicle", "title": "Tell us about your vehicle" },
+    "step3": { "label": "Preferred Date", "title": "When would you like to come in?" },
+    "step4": { "label": "Your Details", "title": "How can we reach you?" },
+    "step5": { "label": "Confirmation", "title": "Review and confirm" },
+    "fields": {
+      "vehicleType": "Vehicle Type",
+      "vehicleMake": "Make",
+      "vehicleModel": "Model",
+      "vehicleYear": "Year",
+      "vehicleColor": "Color",
+      "date": "Preferred Date",
+      "time": "Preferred Time",
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "whatsapp": "WhatsApp Number",
+      "notes": "Notes (optional)"
+    },
+    "back": "Back",
+    "next": "Continue",
+    "submit": "Confirm Booking",
+    "submitting": "Submitting…",
+    "successTitle": "Booking Received",
+    "successBody": "Thank you. NVN Cars will contact you shortly to confirm your appointment.",
+    "close": "Close",
+    "errorGeneric": "Something went wrong. Please try again or contact us on WhatsApp."
+  },
+  "contact": {
+    "eyebrow": "Get In Touch",
+    "title": "Contact",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "location": "Location",
+    "hours": "Working Hours",
+    "cta": "Book Your Service"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "tagline": "Premium Automotive Care — Baghdad"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "retry": "Retry",
+    "language": "العربية"
+  }
+}

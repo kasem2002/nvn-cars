@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id                    String   @id @default(cuid())
+  nameEn                String
+  nameAr                String
+  descriptionEn         String
+  descriptionAr         String
+  detailedDescriptionEn String?
+  detailedDescriptionAr String?
+  image                 String?
+  icon                  String?
+  price                 Float?
+  duration              String?
+  warranty              String?
+  category              String?
+  featured              Boolean  @default(false)
+  active                Boolean  @default(true)
+  order                 Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  bookings              Booking[]
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  serviceId     String?
+  service       Service? @relation(fields: [serviceId], references: [id])
+  vehicleType   String
+  vehicleMake   String?
+  vehicleModel  String?
+  vehicleYear   String?
+  vehicleColor  String?
+  customerName  String
+  phone         String
+  whatsapp      String?
+  preferredDate DateTime
+  preferredTime String
+  notes         String?
+  status        String   @default("pending")
+  internalNotes String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  image     String
+  captionEn String?
+  captionAr String?
+  category  String
+  featured  Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model BeforeAfter {
+  id              String    @id @default(cuid())
+  vehicleName     String
+  vehicleCategory String?
+  beforeImage     String
+  afterImage      String
+  serviceName     String?
+  descriptionEn   String?
+  descriptionAr   String?
+  date            DateTime?
+  featured        Boolean   @default(false)
+  order           Int       @default(0)
+  createdAt       DateTime  @default(now())
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  customerName  String
+  rating        Int
+  reviewEn      String
+  reviewAr      String?
+  vehicle       String?
+  customerImage String?
+  date          DateTime @default(now())
+  featured      Boolean  @default(false)
+  approved      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Location {
+  id            String   @id @default(cuid())
+  name          String
+  nameAr        String?
+  address       String
+  addressAr     String?
+  lat           Float?
+  lng           Float?
+  wazeUrl       String?
+  googleMapsUrl String?
+  phone         String?
+  whatsapp      String?
+  workingHours  String?
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+model SocialPost {
+  id        String    @id @default(cuid())
+  image     String
+  captionEn String?
+  captionAr String?
+  link      String?
+  postedAt  DateTime?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+}
+
+model SiteSettings {
+  id                String   @id @default("singleton")
+  logo              String?
+  favicon           String?
+  primaryColor      String   @default("#E10600")
+  secondaryColor    String   @default("#050505")
+  phone             String?
+  whatsapp          String?
+  email             String?
+  instagram         String?
+  facebook          String?
+  tiktok            String?
+  seoTitleEn        String?
+  seoTitleAr        String?
+  seoDescriptionEn  String?
+  seoDescriptionAr  String?
+  ogImage           String?
+  keywords          String?
+  maintenanceMode   Boolean  @default(false)
+  bookingEnabled    Boolean  @default(true)
+  instagramEnabled  Boolean  @default(true)
+  reviewsEnabled    Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+}

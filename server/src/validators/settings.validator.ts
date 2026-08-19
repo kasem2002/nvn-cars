@@ -1,0 +1,24 @@
+import { z } from "zod";
+
+export const settingsSchema = z.object({
+  logo: z.string().optional().nullable(),
+  favicon: z.string().optional().nullable(),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
+  phone: z.string().optional().nullable(),
+  whatsapp: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  instagram: z.string().optional().nullable(),
+  facebook: z.string().optional().nullable(),
+  tiktok: z.string().optional().nullable(),
+  seoTitleEn: z.string().optional().nullable(),
+  seoTitleAr: z.string().optional().nullable(),
+  seoDescriptionEn: z.string().optional().nullable(),
+  seoDescriptionAr: z.string().optional().nullable(),
+  ogImage: z.string().optional().nullable(),
+  keywords: z.string().optional().nullable(),
+  maintenanceMode: z.boolean().optional(),
+  bookingEnabled: z.boolean().optional(),
+  instagramEnabled: z.boolean().optional(),
+  reviewsEnabled: z.boolean().optional(),
+});
