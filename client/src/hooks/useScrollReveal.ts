@@ -1,19 +1,27 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface Options {
+interface Options<T extends HTMLElement> {
   y?: number;
   duration?: number;
   stagger?: number;
   selector?: string;
+  targetRef?: RefObject<T>;
 }
 
-export function useScrollReveal<T extends HTMLElement>({ y = 40, duration = 0.9, stagger = 0.08, selector = "[data-reveal]" }: Options = {}) {
-  const ref = useRef<T | null>(null);
+export function useScrollReveal<T extends HTMLElement>({
+  y = 40,
+  duration = 0.9,
+  stagger = 0.08,
+  selector = "[data-reveal]",
+  targetRef,
+}: Options<T> = {}) {
+  const ownRef = useRef<T | null>(null);
+  const ref = targetRef ?? ownRef;
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
