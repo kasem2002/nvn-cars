@@ -90,7 +90,9 @@
       "interior": "Interior",
       "customization": "Customization"
     },
-    "empty": "Gallery photography is being curated. New work will appear here soon."
+    "empty": "Gallery photography is being curated. New work will appear here soon.",
+    "prevPage": "Previous page",
+    "nextPage": "Next page"
   },
   "reviews": {
     "eyebrow": "Client Word",

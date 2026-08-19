@@ -1,14 +1,18 @@
-import { MouseEvent, PointerEvent, useRef } from "react";
+import { MouseEvent, PointerEvent, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/app/hooks";
 import { Container } from "@/components/ui/Container";
 import { MediaFrame } from "@/components/ui/MediaFrame";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useLocalized } from "@/hooks/useLocalized";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useGetServicesQuery } from "@/services/api";
 import { bookingModalOpened } from "@/store/uiSlice";
 import { Service } from "@/types";
+
+const AUTOPLAY_INTERVAL_MS = 4500;
+const AUTOPLAY_RESUME_DELAY_MS = 3500;
 
 function ServiceCard({ service }: { service: Service }) {
   const { pick } = useLocalized();
@@ -52,8 +56,29 @@ export function Services() {
   const trackRef = useRef<HTMLDivElement>(null);
   useScrollReveal<HTMLDivElement>({ targetRef: trackRef });
   const isArabic = i18n.language === "ar";
+  const reducedMotion = usePrefersReducedMotion();
 
   const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+  const autoplayPaused = useRef(false);
+  const resumeTimer = useRef<number>();
+
+  function pauseAutoplay() {
+    autoplayPaused.current = true;
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+  }
+
+  function scheduleAutoplayResume() {
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => {
+      autoplayPaused.current = false;
+    }, AUTOPLAY_RESUME_DELAY_MS);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    };
+  }, []);
 
   function scrollByCard(direction: 1 | -1) {
     const track = trackRef.current;
@@ -64,7 +89,34 @@ export function Services() {
     track.scrollBy({ left: sign * direction * amount, behavior: "smooth" });
   }
 
+  function handleArrowClick(direction: 1 | -1) {
+    pauseAutoplay();
+    scrollByCard(direction);
+    scheduleAutoplayResume();
+  }
+
+  useEffect(() => {
+    if (reducedMotion || !services || services.length === 0) return;
+
+    const id = window.setInterval(() => {
+      if (autoplayPaused.current || document.hidden) return;
+      const track = trackRef.current;
+      if (!track) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      const atEnd = Math.abs(track.scrollLeft) >= maxScroll - 8;
+      if (atEnd) {
+        track.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        scrollByCard(1);
+      }
+    }, AUTOPLAY_INTERVAL_MS);
+
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducedMotion, services, isArabic]);
+
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
+    pauseAutoplay();
     if (e.pointerType !== "mouse") return;
     const track = trackRef.current;
     if (!track) return;
@@ -83,6 +135,7 @@ export function Services() {
 
   function endDrag() {
     drag.current.active = false;
+    scheduleAutoplayResume();
   }
 
   function onClickCapture(e: MouseEvent) {
@@ -101,7 +154,7 @@ export function Services() {
 
           <div className="flex gap-3">
             <button
-              onClick={() => scrollByCard(-1)}
+              onClick={() => handleArrowClick(-1)}
               aria-label="Previous services"
               className="flex h-11 w-11 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red"
             >
@@ -110,7 +163,7 @@ export function Services() {
               </svg>
             </button>
             <button
-              onClick={() => scrollByCard(1)}
+              onClick={() => handleArrowClick(1)}
               aria-label="Next services"
               className="flex h-11 w-11 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red"
             >
@@ -129,6 +182,12 @@ export function Services() {
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
         onClickCapture={onClickCapture}
+        onMouseEnter={pauseAutoplay}
+        onMouseLeave={scheduleAutoplayResume}
+        onWheel={() => {
+          pauseAutoplay();
+          scheduleAutoplayResume();
+        }}
         className="scrollbar-none mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 pl-6 pr-6 cursor-grab active:cursor-grabbing md:pl-10 xl:pl-16"
       >
         {isLoading &&
