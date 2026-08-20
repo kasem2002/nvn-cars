@@ -22,4 +22,11 @@ export const settingsSchema = z.object({
   bookingEnabled: z.boolean().optional(),
   instagramEnabled: z.boolean().optional(),
   reviewsEnabled: z.boolean().optional(),
+  experienceTitleEn: z.string().optional().nullable(),
+  experienceTitleAr: z.string().optional().nullable(),
+  experienceBodyEn: z.string().optional().nullable(),
+  experienceBodyAr: z.string().optional().nullable(),
+  experienceImage1: z.string().optional().nullable(),
+  experienceImage2: z.string().optional().nullable(),
+  experienceStats: z.string().optional().nullable(),
 });

@@ -133,7 +133,21 @@ export interface SiteSettings {
   bookingEnabled: boolean;
   instagramEnabled: boolean;
   reviewsEnabled: boolean;
+  experienceTitleEn?: string | null;
+  experienceTitleAr?: string | null;
+  experienceBodyEn?: string | null;
+  experienceBodyAr?: string | null;
+  experienceImage1?: string | null;
+  experienceImage2?: string | null;
+  experienceStats?: string | null;
   updatedAt: string;
+}
+
+export interface ExperienceStat {
+  labelEn: string;
+  labelAr: string;
+  valueEn: string;
+  valueAr: string;
 }
 
 export interface Overview {

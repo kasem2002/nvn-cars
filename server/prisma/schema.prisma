@@ -151,5 +151,14 @@ model SiteSettings {
   bookingEnabled    Boolean  @default(true)
   instagramEnabled  Boolean  @default(true)
   reviewsEnabled    Boolean  @default(true)
+  // Experience section content (About / "The NVN Standard").
+  experienceTitleEn String?
+  experienceTitleAr String?
+  experienceBodyEn  String?
+  experienceBodyAr  String?
+  experienceImage1  String?
+  experienceImage2  String?
+  // JSON string: [{ labelEn, labelAr, valueEn, valueAr }] x 4
+  experienceStats   String?
   updatedAt         DateTime @updatedAt
 }
