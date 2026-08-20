@@ -9,6 +9,7 @@ export function AdminLogin() {
   const token = useAppSelector((s) => s.auth.token);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [login, { isLoading, error }] = useLoginMutation();
 
   if (token) return <Navigate to="/admin" replace />;
@@ -17,7 +18,7 @@ export function AdminLogin() {
     e.preventDefault();
     try {
       const result = await login({ email, password }).unwrap();
-      dispatch(credentialsSet(result));
+      dispatch(credentialsSet({ ...result, remember }));
     } catch {
       // error state below reflects the failure
     }
@@ -55,6 +56,16 @@ export function AdminLogin() {
             />
           </div>
         </div>
+
+        <label className="mt-5 flex cursor-pointer items-center gap-2 text-xs text-white/60 select-none">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            className="h-4 w-4 cursor-pointer accent-nvn-red"
+          />
+          Keep me signed in
+        </label>
 
         {error && <p className="mt-4 text-sm text-nvn-red">Invalid email or password.</p>}
 
