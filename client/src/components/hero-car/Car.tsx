@@ -1,256 +1,257 @@
+import { RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 /**
- * Stylized modern track-focused GT — white paint, bronze wheels,
- * fastback silhouette with a big rear wing. Built entirely from
- * primitives so it ships without external 3D assets, and drawn from
- * generic GT design language (round headlights, front splitter, rear
- * wing) rather than any specific trademarked model or badge.
+ * Stylized modern GT car — clean minimal silhouette rendered with
+ * proper automotive clearcoat paint. Owns being an artistic
+ * representation instead of trying (and failing) to be photoreal.
+ * No brand marks or model-specific shapes are replicated.
  */
-export function Car({ headlightOn = true }: { headlightOn?: boolean }) {
+
+function CarPaint(props: JSX.IntrinsicElements["meshPhysicalMaterial"]) {
+  return (
+    <meshPhysicalMaterial
+      color="#ecedec"
+      metalness={0.35}
+      roughness={0.35}
+      clearcoat={1}
+      clearcoatRoughness={0.06}
+      envMapIntensity={1.6}
+      {...props}
+    />
+  );
+}
+
+function Wheel({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position} rotation={[Math.PI / 2, 0, 0]}>
+      {/* tyre */}
+      <mesh>
+        <cylinderGeometry args={[0.44, 0.44, 0.32, 44]} />
+        <meshStandardMaterial color="#0a0a0a" metalness={0.05} roughness={0.9} />
+      </mesh>
+      {/* rim well */}
+      <mesh position={[0, 0.17, 0]}>
+        <cylinderGeometry args={[0.34, 0.34, 0.03, 36]} />
+        <meshStandardMaterial color="#050505" roughness={0.9} />
+      </mesh>
+      {/* rim face */}
+      <mesh position={[0, 0.185, 0]}>
+        <cylinderGeometry args={[0.32, 0.32, 0.02, 36]} />
+        <meshStandardMaterial color="#8a6b2f" metalness={0.95} roughness={0.22} />
+      </mesh>
+      {/* spokes */}
+      {Array.from({ length: 5 }).map((_, j) => {
+        const angle = (j / 5) * Math.PI * 2;
+        return (
+          <group key={j} rotation={[0, -angle, 0]}>
+            <mesh position={[0.13, 0.19, 0]}>
+              <boxGeometry args={[0.3, 0.015, 0.06]} />
+              <meshStandardMaterial color="#a68542" metalness={0.9} roughness={0.25} />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* hub */}
+      <mesh position={[0, 0.2, 0]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.03, 20]} />
+        <meshStandardMaterial color="#5a4520" metalness={0.85} roughness={0.35} />
+      </mesh>
+      {/* brake caliper */}
+      <mesh position={[0, 0.12, 0]} rotation={[0, Math.PI * 0.3, 0]}>
+        <boxGeometry args={[0.24, 0.09, 0.11]} />
+        <meshStandardMaterial color="#d9a900" metalness={0.6} roughness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+export function Car() {
   const groupRef = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     groupRef.current.position.y = Math.sin(clock.getElapsedTime() * 0.9) * 0.02;
   });
 
-  // Body cross-section (side profile) used to LatheGeometry-extrude
-  // the main shell — gives us a curved fastback silhouette that's
-  // impossible with boxes alone.
+  // Top-down car silhouette extruded downward — gives a body that
+  // narrows at the nose and tail like a real car (not a rectangle).
   const bodyShape = useMemo(() => {
     const s = new THREE.Shape();
-    s.moveTo(-2.15, 0);
-    s.lineTo(-2.05, 0.28);
-    s.bezierCurveTo(-1.7, 0.9, -1.15, 1.12, -0.55, 1.14);
-    s.bezierCurveTo(0.1, 1.14, 0.65, 1.04, 1.15, 0.72);
-    s.lineTo(1.9, 0.5);
-    s.bezierCurveTo(2.05, 0.35, 2.12, 0.2, 2.15, 0);
-    s.lineTo(-2.15, 0);
+    s.moveTo(-2.15, -0.7);
+    s.bezierCurveTo(-2.35, -0.35, -2.35, 0.35, -2.15, 0.7);
+    s.lineTo(-1.4, 0.9);
+    s.bezierCurveTo(-0.5, 1.0, 0.5, 1.0, 1.4, 0.9);
+    s.lineTo(2.0, 0.65);
+    s.bezierCurveTo(2.25, 0.4, 2.25, -0.4, 2.0, -0.65);
+    s.lineTo(1.4, -0.9);
+    s.bezierCurveTo(0.5, -1.0, -0.5, -1.0, -1.4, -0.9);
+    s.closePath();
     return s;
   }, []);
 
-  const bodyGeom = useMemo(() => {
-    const geom = new THREE.ExtrudeGeometry(bodyShape, {
-      depth: 1.75,
-      bevelEnabled: true,
-      bevelSize: 0.18,
-      bevelThickness: 0.18,
-      bevelSegments: 6,
-      curveSegments: 24,
-    });
-    geom.translate(0, 0, -0.875);
-    geom.computeVertexNormals();
-    return geom;
-  }, [bodyShape]);
+  const lowerBody = useMemo(
+    () =>
+      new THREE.ExtrudeGeometry(bodyShape, {
+        depth: 0.65,
+        bevelEnabled: true,
+        bevelSize: 0.14,
+        bevelThickness: 0.14,
+        bevelSegments: 8,
+        curveSegments: 32,
+      }),
+    [bodyShape]
+  );
 
-  // Front splitter shape — a thin flat plate under the nose.
+  // Greenhouse (roof) silhouette — narrower, further back
+  const roofShape = useMemo(() => {
+    const s = new THREE.Shape();
+    s.moveTo(-1.3, -0.55);
+    s.bezierCurveTo(-1.45, -0.25, -1.45, 0.25, -1.3, 0.55);
+    s.lineTo(-0.6, 0.7);
+    s.bezierCurveTo(0.1, 0.75, 0.7, 0.6, 0.85, 0.5);
+    s.bezierCurveTo(1.0, 0.35, 1.0, -0.35, 0.85, -0.5);
+    s.bezierCurveTo(0.7, -0.6, 0.1, -0.75, -0.6, -0.7);
+    s.closePath();
+    return s;
+  }, []);
+
+  const roofGeom = useMemo(
+    () =>
+      new THREE.ExtrudeGeometry(roofShape, {
+        depth: 0.55,
+        bevelEnabled: true,
+        bevelSize: 0.12,
+        bevelThickness: 0.14,
+        bevelSegments: 10,
+        curveSegments: 32,
+      }),
+    [roofShape]
+  );
+
   return (
     <group ref={groupRef}>
-      {/* Ground shadow disc */}
+      {/* Ground shadow */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.55, 0]}>
-        <circleGeometry args={[2.9, 64]} />
+        <circleGeometry args={[3.0, 64]} />
         <meshBasicMaterial color="#000" transparent opacity={0.5} />
       </mesh>
 
-      {/* Main curved body shell (white metallic) */}
-      <mesh geometry={bodyGeom} position={[0, -0.4, 0]} castShadow>
-        <meshStandardMaterial color="#ecedec" metalness={0.55} roughness={0.28} envMapIntensity={1.4} />
+      {/* Main body (extruded top-down silhouette, laid flat) */}
+      <mesh
+        geometry={lowerBody}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.45, 0]}
+        castShadow
+      >
+        <CarPaint />
       </mesh>
 
-      {/* Lower body / rocker panels (dark carbon-look) */}
-      <mesh position={[0, -0.34, 0]}>
-        <boxGeometry args={[3.9, 0.18, 1.86]} />
-        <meshStandardMaterial color="#141416" metalness={0.6} roughness={0.4} />
+      {/* Roof / greenhouse */}
+      <mesh
+        geometry={roofGeom}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[-0.15, 0.28, 0]}
+        castShadow
+      >
+        <CarPaint />
       </mesh>
 
-      {/* Front splitter (aggressive front lip) */}
-      <mesh position={[1.95, -0.42, 0]}>
-        <boxGeometry args={[0.32, 0.06, 1.9]} />
-        <meshStandardMaterial color="#0d0d0d" metalness={0.4} roughness={0.5} />
-      </mesh>
-
-      {/* Rear diffuser */}
-      <mesh position={[-2.0, -0.42, 0]}>
-        <boxGeometry args={[0.32, 0.06, 1.9]} />
-        <meshStandardMaterial color="#0d0d0d" metalness={0.4} roughness={0.5} />
-      </mesh>
-
-      {/* Windshield — angled forward */}
-      <mesh position={[0.7, 0.55, 0]} rotation={[0, 0, -0.5]}>
-        <boxGeometry args={[0.05, 0.9, 1.5]} />
+      {/* Windshield / greenhouse glass — a smoothed dark dome sitting on the roof */}
+      <mesh position={[-0.05, 0.75, 0]} scale={[1.3, 0.45, 0.85]}>
+        <sphereGeometry args={[1, 32, 24, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshPhysicalMaterial
-          color="#0a0f1a"
-          metalness={0.1}
-          roughness={0.06}
-          transmission={0.7}
+          color="#080a12"
+          metalness={0.2}
+          roughness={0.05}
+          transmission={0.55}
           transparent
-          opacity={0.75}
-          thickness={0.1}
-          ior={1.4}
+          opacity={0.85}
+          thickness={0.2}
+          ior={1.45}
+          envMapIntensity={2}
         />
       </mesh>
 
-      {/* Fastback rear window — long shallow slope */}
-      <mesh position={[-0.85, 0.5, 0]} rotation={[0, 0, 0.55]}>
-        <boxGeometry args={[0.05, 1.3, 1.5]} />
-        <meshPhysicalMaterial
-          color="#0a0f1a"
-          metalness={0.1}
-          roughness={0.06}
-          transmission={0.7}
-          transparent
-          opacity={0.75}
-          thickness={0.1}
-          ior={1.4}
-        />
-      </mesh>
-
-      {/* Side glass */}
-      {[-0.88, 0.88].map((z) => (
-        <mesh key={z} position={[-0.05, 0.6, z]}>
-          <boxGeometry args={[1.9, 0.35, 0.02]} />
-          <meshPhysicalMaterial
-            color="#080a12"
-            metalness={0.1}
-            roughness={0.05}
-            transmission={0.55}
-            transparent
-            opacity={0.85}
-            thickness={0.1}
-          />
-        </mesh>
+      {/* Rocker panels (dark carbon strip along the sides) */}
+      {[-0.95, 0.95].map((z) => (
+        <RoundedBox key={z} args={[3.6, 0.16, 0.08]} radius={0.04} position={[0, -0.36, z]}>
+          <meshStandardMaterial color="#0d0d0d" metalness={0.4} roughness={0.55} />
+        </RoundedBox>
       ))}
 
-      {/* Roof line (subtle dark trim strip) */}
-      <mesh position={[-0.15, 1.06, 0]}>
-        <boxGeometry args={[1.7, 0.03, 1.4]} />
-        <meshStandardMaterial color="#ecedec" metalness={0.55} roughness={0.28} />
-      </mesh>
+      {/* Front splitter */}
+      <RoundedBox args={[0.32, 0.06, 1.9]} radius={0.02} position={[2.05, -0.44, 0]}>
+        <meshStandardMaterial color="#080808" metalness={0.35} roughness={0.55} />
+      </RoundedBox>
 
-      {/* Hood centre stripe (subtle graphic accent, not a badge) */}
-      <mesh position={[1.35, 0.7, 0]}>
-        <boxGeometry args={[0.9, 0.005, 0.25]} />
-        <meshStandardMaterial color="#141416" metalness={0.4} roughness={0.6} />
-      </mesh>
+      {/* Rear diffuser */}
+      <RoundedBox args={[0.32, 0.06, 1.9]} radius={0.02} position={[-2.1, -0.44, 0]}>
+        <meshStandardMaterial color="#080808" metalness={0.35} roughness={0.55} />
+      </RoundedBox>
 
-      {/* Round headlight housings + inner lens */}
-      {[-0.68, 0.68].map((z) => (
-        <group key={z} position={[2.0, 0.28, z]}>
-          {/* housing bezel */}
+      {/* Headlights — recessed into the front fenders */}
+      {[-0.72, 0.72].map((z) => (
+        <group key={z} position={[2.12, 0.05, z]}>
           <mesh rotation={[0, Math.PI / 2, 0]}>
-            <torusGeometry args={[0.19, 0.045, 12, 24]} />
-            <meshStandardMaterial color="#1a1a1a" metalness={0.75} roughness={0.25} />
-          </mesh>
-          {/* lens */}
-          <mesh position={[0.05, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-            <circleGeometry args={[0.17, 24]} />
+            <cylinderGeometry args={[0.16, 0.16, 0.08, 24]} />
             <meshStandardMaterial
-              color="#f4efe0"
-              emissive={headlightOn ? "#fff5d6" : "#111"}
-              emissiveIntensity={headlightOn ? 2.1 : 0}
+              color="#f5efdc"
+              emissive="#fff5d6"
+              emissiveIntensity={2.4}
               metalness={0.2}
-              roughness={0.15}
+              roughness={0.1}
             />
+          </mesh>
+          <mesh rotation={[0, Math.PI / 2, 0]} position={[-0.04, 0, 0]}>
+            <torusGeometry args={[0.16, 0.03, 12, 24]} />
+            <meshStandardMaterial color="#141414" metalness={0.6} roughness={0.35} />
           </mesh>
         </group>
       ))}
 
-      {/* Front air intakes (dark inlets flanking the splitter) */}
+      {/* Front intakes (twin black voids either side of splitter) */}
       {[-0.55, 0.55].map((z) => (
-        <mesh key={z} position={[2.05, -0.2, z]}>
-          <boxGeometry args={[0.06, 0.18, 0.4]} />
-          <meshStandardMaterial color="#050505" metalness={0.2} roughness={0.85} />
-        </mesh>
+        <RoundedBox key={z} args={[0.08, 0.14, 0.5]} radius={0.03} position={[2.15, -0.25, z]}>
+          <meshStandardMaterial color="#020202" metalness={0.1} roughness={0.9} />
+        </RoundedBox>
       ))}
 
-      {/* Side intakes on the rear haunches (brand-red accent) */}
-      {[-0.92, 0.92].map((z) => (
-        <mesh key={z} position={[-1.1, 0.05, z]}>
-          <boxGeometry args={[0.35, 0.12, 0.03]} />
-          <meshStandardMaterial color="#E10600" metalness={0.3} roughness={0.4} emissive="#3a0100" emissiveIntensity={0.35} />
-        </mesh>
+      {/* Side vents on rear haunches — brand-red accent */}
+      {[-1.0, 1.0].map((z) => (
+        <RoundedBox key={z} args={[0.55, 0.14, 0.03]} radius={0.02} position={[-1.15, 0.05, z]}>
+          <meshStandardMaterial color="#E10600" metalness={0.4} roughness={0.35} emissive="#3a0100" emissiveIntensity={0.4} />
+        </RoundedBox>
       ))}
 
-      {/* Rear tail-light bar (red strip across the back) */}
-      <mesh position={[-2.13, 0.35, 0]}>
-        <boxGeometry args={[0.03, 0.12, 1.5]} />
-        <meshStandardMaterial color="#8a0400" emissive="#E10600" emissiveIntensity={2.1} />
-      </mesh>
+      {/* Tail-light bar */}
+      <RoundedBox args={[0.03, 0.13, 1.55]} radius={0.02} position={[-2.18, 0.28, 0]}>
+        <meshStandardMaterial color="#8a0400" emissive="#E10600" emissiveIntensity={2.2} />
+      </RoundedBox>
 
-      {/* Rear wing — big track-style wing on twin stanchions */}
-      <group position={[-1.55, 1.02, 0]}>
-        {/* wing plane */}
-        <mesh>
-          <boxGeometry args={[0.55, 0.05, 1.7]} />
+      {/* Rear wing */}
+      <group position={[-1.65, 1.0, 0]}>
+        <RoundedBox args={[0.6, 0.06, 1.75]} radius={0.03}>
           <meshStandardMaterial color="#141416" metalness={0.75} roughness={0.3} />
-        </mesh>
-        {/* endplates */}
-        {[-0.85, 0.85].map((z) => (
-          <mesh key={z} position={[0, -0.05, z]}>
-            <boxGeometry args={[0.5, 0.28, 0.03]} />
+        </RoundedBox>
+        {[-0.87, 0.87].map((z) => (
+          <RoundedBox key={z} args={[0.55, 0.32, 0.03]} radius={0.02} position={[0, -0.08, z]}>
             <meshStandardMaterial color="#141416" metalness={0.75} roughness={0.3} />
-          </mesh>
+          </RoundedBox>
         ))}
-        {/* stanchions */}
-        {[-0.45, 0.45].map((z) => (
-          <mesh key={z} position={[0.05, -0.22, z]}>
-            <boxGeometry args={[0.12, 0.35, 0.05]} />
+        {[-0.48, 0.48].map((z) => (
+          <RoundedBox key={z} args={[0.12, 0.36, 0.06]} radius={0.02} position={[0.05, -0.22, z]}>
             <meshStandardMaterial color="#141416" metalness={0.75} roughness={0.3} />
-          </mesh>
+          </RoundedBox>
         ))}
       </group>
 
-      {/* Wheels — bronze alloys with visible spokes */}
-      {[
-        [1.35, -0.42, 0.94],
-        [1.35, -0.42, -0.94],
-        [-1.35, -0.42, 0.94],
-        [-1.35, -0.42, -0.94],
-      ].map(([x, y, z], i) => (
-        <group key={i} position={[x, y, z]} rotation={[Math.PI / 2, 0, 0]}>
-          {/* tyre */}
-          <mesh>
-            <cylinderGeometry args={[0.42, 0.42, 0.3, 40]} />
-            <meshStandardMaterial color="#0a0a0a" metalness={0.05} roughness={0.9} />
-          </mesh>
-          {/* inner tyre wall */}
-          <mesh position={[0, 0.16, 0]}>
-            <cylinderGeometry args={[0.32, 0.32, 0.03, 32]} />
-            <meshStandardMaterial color="#050505" metalness={0.1} roughness={0.9} />
-          </mesh>
-          {/* rim disc */}
-          <mesh position={[0, 0.17, 0]}>
-            <cylinderGeometry args={[0.3, 0.3, 0.02, 32]} />
-            <meshStandardMaterial color="#8a6b2f" metalness={0.9} roughness={0.28} />
-          </mesh>
-          {/* spokes (thin bars radiating from center) */}
-          {Array.from({ length: 7 }).map((_, j) => {
-            const angle = (j / 7) * Math.PI * 2;
-            return (
-              <mesh
-                key={j}
-                position={[Math.cos(angle) * 0.14, 0.18, Math.sin(angle) * 0.14]}
-                rotation={[0, -angle, 0]}
-              >
-                <boxGeometry args={[0.26, 0.015, 0.05]} />
-                <meshStandardMaterial color="#a68542" metalness={0.9} roughness={0.28} />
-              </mesh>
-            );
-          })}
-          {/* central hub */}
-          <mesh position={[0, 0.185, 0]}>
-            <cylinderGeometry args={[0.08, 0.08, 0.03, 20]} />
-            <meshStandardMaterial color="#5a4520" metalness={0.85} roughness={0.35} />
-          </mesh>
-          {/* brake caliper (yellow — reads as high-perf) */}
-          <mesh position={[0, 0.12, 0]} rotation={[0, Math.PI * 0.35, 0]}>
-            <boxGeometry args={[0.2, 0.08, 0.1]} />
-            <meshStandardMaterial color="#d9a900" metalness={0.6} roughness={0.4} emissive="#3a2b00" emissiveIntensity={0.4} />
-          </mesh>
-        </group>
-      ))}
+      {/* Wheels */}
+      <Wheel position={[1.4, -0.42, 0.96]} />
+      <Wheel position={[1.4, -0.42, -0.96]} />
+      <Wheel position={[-1.4, -0.42, 0.96]} />
+      <Wheel position={[-1.4, -0.42, -0.96]} />
     </group>
   );
 }
