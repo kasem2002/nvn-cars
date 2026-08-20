@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
+import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { MediaFrame } from "@/components/ui/MediaFrame";
 import { bookingModalOpened } from "@/store/uiSlice";
+
+const HeroCar = lazy(() => import("@/components/hero-car/HeroCar"));
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -18,10 +21,13 @@ export function Hero() {
   return (
     <section id="home" className="relative flex h-[100svh] min-h-[640px] w-full items-end overflow-hidden">
       <MediaFrame src={null} alt="NVN Cars — premium vehicle" label="Hero Photography" className="absolute inset-0" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-nvn-black via-nvn-black/60 to-nvn-black/20" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-nvn-black/70 via-transparent to-transparent" />
+      <Suspense fallback={null}>
+        <HeroCar />
+      </Suspense>
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-nvn-black via-nvn-black/60 to-nvn-black/20" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-nvn-black/70 via-transparent to-transparent" />
 
-      <div className="relative z-10 w-full px-6 pb-20 md:px-10 md:pb-24 xl:px-16">
+      <div className="relative z-[3] w-full px-6 pb-20 md:px-10 md:pb-24 xl:px-16">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={entered ? { opacity: 1, y: 0 } : {}}
@@ -86,7 +92,7 @@ export function Hero() {
         animate={entered ? { opacity: 1 } : {}}
         transition={{ delay: 1.2, duration: 0.8 }}
         aria-label={t("hero.scroll")}
-        className="absolute bottom-8 right-6 z-10 hidden flex-col items-center gap-2 md:right-10 md:flex xl:right-16"
+        className="absolute bottom-8 right-6 z-[3] hidden flex-col items-center gap-2 md:right-10 md:flex xl:right-16"
       >
         <span className="text-[10px] font-semibold uppercase tracking-widest2 text-nvn-silver">{t("hero.scroll")}</span>
         <span className="relative h-12 w-px overflow-hidden bg-white/20">

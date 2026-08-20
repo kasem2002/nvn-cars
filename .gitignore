@@ -12,3 +12,10 @@ server/uploads/*
 !server/uploads/.gitkeep
 
 .DS_Store
+
+# Ripped-game asset kept in public/ for local prototyping only.
+# Do not commit — see conversation notes about copyright.
+client/public/models/*.obj
+client/public/models/*.mtl
+client/public/models/*.gltf
+client/public/models/*.glb
