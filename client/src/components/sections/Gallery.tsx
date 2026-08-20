@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { MediaFrame } from "@/components/ui/MediaFrame";
@@ -28,15 +28,15 @@ export function Gallery() {
   const currentPage = Math.min(page, totalPages);
   const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  useEffect(() => {
-    setPage(1);
-  }, [category]);
-
   function changeCategory(c: (typeof CATEGORIES)[number]) {
+    if (c === category) return;
     setCategory(c);
+    setPage(1);
+    document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function goToPage(p: number) {
+    if (p === currentPage) return;
     setPage(p);
     document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -60,9 +60,9 @@ export function Gallery() {
           ))}
         </div>
 
-        {pageItems.length > 0 ? (
-          <>
-            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div key={`${category}-${currentPage}`} className="mt-10 min-h-[520px] animate-[fadeIn_.35s_ease-out]">
+          {pageItems.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {pageItems.map((item) => (
                 <button key={item.id} onClick={() => setLightbox(item)} className="block w-full">
                   <MediaFrame
@@ -73,53 +73,53 @@ export function Gallery() {
                 </button>
               ))}
             </div>
+          ) : (
+            <p className="text-sm text-nvn-silver">{t("gallery.empty")}</p>
+          )}
+        </div>
 
-            {totalPages > 1 && (
-              <div className="mt-12 flex items-center justify-center gap-2">
+        {pageItems.length > 0 && totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-2">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              aria-label={t("gallery.prevPage")}
+              className="flex h-10 w-10 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red disabled:pointer-events-none disabled:opacity-30"
+            >
+              <svg viewBox="0 0 24 24" className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, i) => {
+              const pageNum = i + 1;
+              return (
                 <button
-                  onClick={() => goToPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  aria-label={t("gallery.prevPage")}
-                  className="flex h-10 w-10 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red disabled:pointer-events-none disabled:opacity-30"
+                  key={pageNum}
+                  onClick={() => goToPage(pageNum)}
+                  aria-current={pageNum === currentPage}
+                  className={`flex h-10 w-10 items-center justify-center border text-sm transition-colors duration-300 ${
+                    pageNum === currentPage
+                      ? "border-nvn-red bg-nvn-red text-white"
+                      : "border-nvn-line text-nvn-silver hover:border-nvn-white hover:text-nvn-white"
+                  }`}
                 >
-                  <svg viewBox="0 0 24 24" className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  {pageNum}
                 </button>
+              );
+            })}
 
-                {Array.from({ length: totalPages }).map((_, i) => {
-                  const pageNum = i + 1;
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => goToPage(pageNum)}
-                      aria-current={pageNum === currentPage}
-                      className={`flex h-10 w-10 items-center justify-center border text-sm transition-colors duration-300 ${
-                        pageNum === currentPage
-                          ? "border-nvn-red bg-nvn-red text-white"
-                          : "border-nvn-line text-nvn-silver hover:border-nvn-white hover:text-nvn-white"
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => goToPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  aria-label={t("gallery.nextPage")}
-                  className="flex h-10 w-10 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <svg viewBox="0 0 24 24" className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="mt-10 text-sm text-nvn-silver">{t("gallery.empty")}</p>
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              aria-label={t("gallery.nextPage")}
+              className="flex h-10 w-10 items-center justify-center border border-nvn-line text-nvn-white transition-colors duration-300 hover:border-nvn-red hover:text-nvn-red disabled:pointer-events-none disabled:opacity-30"
+            >
+              <svg viewBox="0 0 24 24" className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         )}
       </Container>
 
