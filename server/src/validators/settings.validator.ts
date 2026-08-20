@@ -10,6 +10,7 @@ export const settingsSchema = z.object({
   email: z.string().optional().nullable(),
   instagram: z.string().optional().nullable(),
   facebook: z.string().optional().nullable(),
+  snapchat: z.string().optional().nullable(),
   tiktok: z.string().optional().nullable(),
   seoTitleEn: z.string().optional().nullable(),
   seoTitleAr: z.string().optional().nullable(),

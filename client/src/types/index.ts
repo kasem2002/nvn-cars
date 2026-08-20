@@ -121,6 +121,7 @@ export interface SiteSettings {
   email?: string | null;
   instagram?: string | null;
   facebook?: string | null;
+  snapchat?: string | null;
   tiktok?: string | null;
   seoTitleEn?: string | null;
   seoTitleAr?: string | null;

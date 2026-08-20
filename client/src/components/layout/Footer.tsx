@@ -51,6 +51,20 @@ export function Footer() {
                 </a>
               </li>
             )}
+            {settings?.facebook && (
+              <li>
+                <a href={settings.facebook} target="_blank" rel="noreferrer" className="transition-colors hover:text-nvn-red">
+                  Facebook
+                </a>
+              </li>
+            )}
+            {settings?.snapchat && (
+              <li>
+                <a href={settings.snapchat} target="_blank" rel="noreferrer" className="transition-colors hover:text-nvn-red">
+                  Snapchat
+                </a>
+              </li>
+            )}
           </ul>
         </div>
 

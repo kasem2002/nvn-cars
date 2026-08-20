@@ -17,7 +17,7 @@ export function StructuredData() {
       name: "NVN Cars",
       image: settings.logo || undefined,
       telephone: settings.phone || undefined,
-      sameAs: [settings.instagram, settings.facebook, settings.tiktok].filter(Boolean),
+      sameAs: [settings.instagram, settings.facebook, settings.snapchat, settings.tiktok].filter(Boolean),
       ...(primary && {
         address: {
           "@type": "PostalAddress",

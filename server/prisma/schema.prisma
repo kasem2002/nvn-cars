@@ -139,6 +139,7 @@ model SiteSettings {
   email             String?
   instagram         String?
   facebook          String?
+  snapchat          String?
   tiktok            String?
   seoTitleEn        String?
   seoTitleAr        String?

@@ -13,6 +13,8 @@ export function Contact() {
     settings?.phone && { label: t("contact.phone"), value: settings.phone, href: `tel:${settings.phone}` },
     settings?.whatsapp && { label: t("contact.whatsapp"), value: settings.whatsapp, href: `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}` },
     settings?.instagram && { label: t("contact.instagram"), value: "@nvn.cars", href: settings.instagram },
+    settings?.facebook && { label: t("contact.facebook"), value: t("contact.viewProfile"), href: settings.facebook },
+    settings?.snapchat && { label: t("contact.snapchat"), value: t("contact.viewProfile"), href: settings.snapchat },
   ].filter(Boolean) as { label: string; value: string; href: string }[];
 
   return (

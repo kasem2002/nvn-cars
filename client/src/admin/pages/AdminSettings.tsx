@@ -55,6 +55,9 @@ export function AdminSettings() {
         <FormField label="Facebook URL">
           <input className={inputClass} value={form.facebook ?? ""} onChange={(e) => set("facebook", e.target.value)} />
         </FormField>
+        <FormField label="Snapchat URL">
+          <input className={inputClass} value={form.snapchat ?? ""} onChange={(e) => set("snapchat", e.target.value)} />
+        </FormField>
         <FormField label="TikTok URL">
           <input className={inputClass} value={form.tiktok ?? ""} onChange={(e) => set("tiktok", e.target.value)} />
         </FormField>
