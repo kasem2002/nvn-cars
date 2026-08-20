@@ -9,7 +9,7 @@ import { useGetGalleryItemsQuery } from "@/services/api";
 import { GalleryItem } from "@/types";
 
 const CATEGORIES = ["all", "ppf", "nano-ceramic", "polish", "tint", "interior", "customization"] as const;
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 
 export function Gallery() {
   const { t } = useTranslation();
@@ -62,9 +62,9 @@ export function Gallery() {
 
         {pageItems.length > 0 ? (
           <>
-            <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {pageItems.map((item) => (
-                <button key={item.id} onClick={() => setLightbox(item)} className="block w-full break-inside-avoid">
+                <button key={item.id} onClick={() => setLightbox(item)} className="block w-full">
                   <MediaFrame
                     src={item.image}
                     alt={pick(item.captionEn, item.captionAr) || "NVN Cars"}
