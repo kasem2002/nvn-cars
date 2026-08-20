@@ -9,7 +9,13 @@ export function Logo({ className = "" }: { className?: string }) {
   const { data: settings } = useGetSettingsQuery();
 
   if (settings?.logo) {
-    return <img src={settings.logo} alt="NVN Cars" className={className} />;
+    return (
+      <img
+        src={settings.logo}
+        alt="NVN Cars"
+        className={`h-9 w-auto md:h-11 ${className}`}
+      />
+    );
   }
 
   return (
