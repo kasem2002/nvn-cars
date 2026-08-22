@@ -19,6 +19,7 @@ import { Reviews } from "@/components/sections/Reviews";
 import { ServiceSelector } from "@/components/sections/ServiceSelector";
 import { Services } from "@/components/sections/Services";
 import { Showcase } from "@/components/sections/Showcase";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { useGetSettingsQuery } from "@/services/api";
 import { useLenis } from "@/hooks/useLenis";
@@ -36,6 +37,7 @@ export function Home() {
 
   return (
     <>
+      <SeoHead />
       <StructuredData />
       <Loader />
       {hasEntered && (
