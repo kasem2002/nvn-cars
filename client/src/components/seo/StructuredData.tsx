@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useGetLocationsQuery, useGetServicesQuery, useGetSettingsQuery } from "@/services/api";
 
 const SCRIPT_ID = "nvn-seo-schema";
@@ -20,10 +21,12 @@ export function StructuredData() {
   const { data: settings } = useGetSettingsQuery();
   const { data: locations } = useGetLocationsQuery();
   const { data: services } = useGetServicesQuery();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (!settings) return;
     const primary = locations?.[0];
+    const isAr = i18n.language === "ar";
 
     const address = primary
       ? {
@@ -53,14 +56,18 @@ export function StructuredData() {
     const business: Record<string, unknown> = {
       "@type": ["AutomotiveBusiness", "LocalBusiness"],
       "@id": BASE_ID,
-      name: "NVN Cars",
-      alternateName: ["إن في إن كارز", "NVN Cars Baghdad"],
+      name: isAr ? "إن في إن كارز" : "NVN Cars",
+      alternateName: isAr ? ["NVN Cars", "NVN Cars Baghdad"] : ["إن في إن كارز", "NVN Cars Baghdad"],
       url: SITE_URL,
       logo: settings.logo ? new URL(settings.logo, SITE_URL).toString() : `${SITE_URL}/logo.png`,
       image: settings.logo ? new URL(settings.logo, SITE_URL).toString() : `${SITE_URL}/og-image.jpg`,
-      description:
-        settings.seoDescriptionEn ||
-        "Premium automotive care center in Al Mansour, Baghdad. PPF, nano ceramic, tinting, polishing, deep detailing, wheel painting, vehicle updating.",
+      description: isAr
+        ? settings.seoDescriptionAr ||
+          settings.seoDescriptionEn ||
+          "مركز عناية فاخر بالسيارات في المنصور، بغداد. حماية طلاء PPF، نانو سيراميك، تظليل، تلميع، تنظيف عميق، طلاء الجنوط، تحديث السيارات."
+        : settings.seoDescriptionEn ||
+          settings.seoDescriptionAr ||
+          "Premium automotive care center in Al Mansour, Baghdad. PPF, nano ceramic, tinting, polishing, deep detailing, wheel painting, vehicle updating.",
       priceRange: "$$$",
       currenciesAccepted: "IQD",
       address,
@@ -121,9 +128,10 @@ export function StructuredData() {
       .map((s) => ({
         "@type": "Service",
         "@id": `${SITE_URL}/#service-${s.id}`,
-        name: s.nameEn,
-        alternateName: s.nameAr,
-        description: s.descriptionEn,
+        name: isAr ? s.nameAr || s.nameEn : s.nameEn || s.nameAr,
+        alternateName: isAr ? s.nameEn || undefined : s.nameAr || undefined,
+        description: isAr ? s.descriptionAr || s.descriptionEn : s.descriptionEn || s.descriptionAr,
+        inLanguage: isAr ? "ar" : "en",
         category: s.category || "Automotive Care",
         serviceType: s.nameEn,
         provider: { "@id": BASE_ID },
@@ -150,7 +158,7 @@ export function StructuredData() {
       document.head.appendChild(el);
     }
     el.textContent = JSON.stringify(graph);
-  }, [settings, locations, services]);
+  }, [settings, locations, services, i18n.language]);
 
   return null;
 }
