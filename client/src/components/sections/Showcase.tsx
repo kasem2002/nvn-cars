@@ -1,8 +1,9 @@
 import { useRef } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { MediaFrame } from "@/components/ui/MediaFrame";
+import { useGetSettingsQuery } from "@/services/api";
 
-function Panel({ label, speed }: { label: string; speed: number }) {
+function Panel({ label, speed, src }: { label: string; speed: number; src: string | null | undefined }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [speed * -40, speed * 40]);
@@ -10,7 +11,7 @@ function Panel({ label, speed }: { label: string; speed: number }) {
   return (
     <div ref={ref} className="relative aspect-[3/4] overflow-hidden">
       <motion.div style={{ y }} className="absolute inset-[-10%]">
-        <MediaFrame src={null} alt={label} label={label} className="h-full w-full" />
+        <MediaFrame src={src ?? null} alt={label} label={label} className="h-full w-full" />
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-t from-nvn-black/70 via-transparent to-transparent" />
       <span className="absolute bottom-6 left-6 text-xs font-semibold uppercase tracking-widest2 text-nvn-white">{label}</span>
@@ -19,12 +20,14 @@ function Panel({ label, speed }: { label: string; speed: number }) {
 }
 
 export function Showcase() {
+  const { data: settings } = useGetSettingsQuery();
+
   return (
     <section id="experience" className="bg-nvn-black py-24 md:py-32">
       <div className="grid grid-cols-1 gap-3 px-3 sm:grid-cols-3 sm:gap-4 sm:px-4">
-        <Panel label="Paint Protection" speed={0.6} />
-        <Panel label="Nano Ceramic Finish" speed={1} />
-        <Panel label="Interior Craft" speed={0.6} />
+        <Panel label="Paint Protection" speed={0.6} src={settings?.showcaseImage1} />
+        <Panel label="Nano Ceramic Finish" speed={1} src={settings?.showcaseImage2} />
+        <Panel label="Interior Craft" speed={0.6} src={settings?.showcaseImage3} />
       </div>
     </section>
   );

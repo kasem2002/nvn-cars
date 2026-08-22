@@ -29,4 +29,8 @@ export const settingsSchema = z.object({
   experienceImage1: z.string().optional().nullable(),
   experienceImage2: z.string().optional().nullable(),
   experienceStats: z.string().optional().nullable(),
+  heroImage: z.string().optional().nullable(),
+  showcaseImage1: z.string().optional().nullable(),
+  showcaseImage2: z.string().optional().nullable(),
+  showcaseImage3: z.string().optional().nullable(),
 });

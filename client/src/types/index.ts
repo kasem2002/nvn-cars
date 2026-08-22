@@ -140,6 +140,10 @@ export interface SiteSettings {
   experienceImage1?: string | null;
   experienceImage2?: string | null;
   experienceStats?: string | null;
+  heroImage?: string | null;
+  showcaseImage1?: string | null;
+  showcaseImage2?: string | null;
+  showcaseImage3?: string | null;
   updatedAt: string;
 }
 

@@ -10,7 +10,6 @@ import { About } from "@/components/sections/About";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
 import { BookingCTA } from "@/components/sections/BookingCTA";
 import { BrandStatement } from "@/components/sections/BrandStatement";
-import { Contact } from "@/components/sections/Contact";
 import { Gallery } from "@/components/sections/Gallery";
 import { Hero } from "@/components/sections/Hero";
 import { Instagram } from "@/components/sections/Instagram";
@@ -46,8 +45,11 @@ export function Home() {
           <main>
             <Hero />
             <BrandStatement />
-            <Services />
+            {/* Selector first ("what do you need?"), then the full
+                carousel ("see all options") — otherwise visitors see
+                the same service list twice within seconds. */}
             <ServiceSelector />
+            <Services />
             <Showcase />
             <About />
             <BeforeAfter />
@@ -56,7 +58,6 @@ export function Home() {
             <Instagram />
             <Location />
             <BookingCTA />
-            <Contact />
           </main>
           <Footer />
           <WhatsAppFloat />

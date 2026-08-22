@@ -28,12 +28,46 @@ export function AdminSettings() {
   if (isLoading || !settings) return <p className="text-white/40">Loading…</p>;
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-4xl">
       <h1 className="text-2xl font-semibold text-white">Website Settings</h1>
 
       <Section title="Branding">
         <ImageUpload label="Logo" value={form.logo} onChange={(url) => set("logo", url)} aspect="aspect-[3/1]" />
         <ImageUpload label="Favicon" value={form.favicon} onChange={(url) => set("favicon", url)} aspect="aspect-square" />
+      </Section>
+
+      <Section title="Home Photography">
+        <p className="mb-4 text-xs text-white/40">
+          Photos rendered directly on the home page. Uploads are compressed and resized automatically.
+        </p>
+        <div className="space-y-4">
+          <ImageUpload
+            label="Hero background photo (also shown on mobile in place of the 3D car)"
+            value={form.heroImage}
+            onChange={(url) => set("heroImage", url)}
+            aspect="aspect-[16/9]"
+          />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ImageUpload
+              label="Showcase panel 1 · Paint Protection"
+              value={form.showcaseImage1}
+              onChange={(url) => set("showcaseImage1", url)}
+              aspect="aspect-[3/4]"
+            />
+            <ImageUpload
+              label="Showcase panel 2 · Nano Ceramic Finish"
+              value={form.showcaseImage2}
+              onChange={(url) => set("showcaseImage2", url)}
+              aspect="aspect-[3/4]"
+            />
+            <ImageUpload
+              label="Showcase panel 3 · Interior Craft"
+              value={form.showcaseImage3}
+              onChange={(url) => set("showcaseImage3", url)}
+              aspect="aspect-[3/4]"
+            />
+          </div>
+        </div>
       </Section>
 
       <Section title="Contact">

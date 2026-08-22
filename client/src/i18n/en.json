@@ -36,7 +36,7 @@
   "selector": {
     "eyebrow": "Personalized",
     "title": "Find the right service for your car",
-    "subtitle": "Tell us about your vehicle and your goal — we'll recommend the right NVN treatment.",
+    "subtitle": "Tell us what you want to do for your car and we'll recommend the right NVN treatment.",
     "vehicleLabel": "Vehicle Type",
     "goalLabel": "Your Main Goal",
     "vehicles": {
@@ -56,7 +56,7 @@
       "fullCare": "Full Car Care"
     },
     "resultTitle": "Recommended for you",
-    "noSelection": "Choose a vehicle type and a goal to see recommendations."
+    "noSelection": "Choose a goal to see recommended services."
   },
   "about": {
     "eyebrow": "The NVN Standard",

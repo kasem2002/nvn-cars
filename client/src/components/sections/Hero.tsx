@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { MediaFrame } from "@/components/ui/MediaFrame";
+import { useGetSettingsQuery } from "@/services/api";
 import { bookingModalOpened } from "@/store/uiSlice";
 
 const HeroCar = lazy(() => import("@/components/hero-car/HeroCar"));
@@ -17,10 +18,19 @@ export function Hero() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const entered = useAppSelector((s) => s.ui.hasEnteredSite);
+  const { data: settings } = useGetSettingsQuery();
 
   return (
     <section id="home" className="relative flex h-[100svh] min-h-[640px] w-full items-end overflow-hidden">
-      <MediaFrame src={null} alt="NVN Cars — premium vehicle" label="Hero Photography" className="absolute inset-0" />
+      {/* Hero background photo. On desktop the 3D car above covers most
+          of it; below 900px the 3D car is intentionally disabled, so
+          this image is what visitors actually see. */}
+      <MediaFrame
+        src={settings?.heroImage ?? null}
+        alt="NVN Cars — premium vehicle"
+        label="Hero Photography"
+        className="absolute inset-0"
+      />
       <Suspense fallback={null}>
         <HeroCar />
       </Suspense>

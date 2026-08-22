@@ -160,5 +160,12 @@ model SiteSettings {
   experienceImage2  String?
   // JSON string: [{ labelEn, labelAr, valueEn, valueAr }] x 4
   experienceStats   String?
+  // Hero background photo (rendered behind the 3D car, and shown alone
+  // on <900px viewports where the car is intentionally disabled).
+  heroImage         String?
+  // The three parallax panels in the Showcase / Experience row.
+  showcaseImage1    String?
+  showcaseImage2    String?
+  showcaseImage3    String?
   updatedAt         DateTime @updatedAt
 }
