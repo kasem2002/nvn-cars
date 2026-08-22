@@ -50,7 +50,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export function BookingModal() {
   const { t } = useTranslation();
-  const { pick } = useLocalized();
+  const { pick, isArabic } = useLocalized();
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.bookingModalOpen);
   const presetServiceId = useAppSelector((s) => s.ui.bookingPresetServiceId);
@@ -61,14 +61,19 @@ export function BookingModal() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [showPhoneErrors, setShowPhoneErrors] = useState(false);
 
+  // Reset only when `open` flips from false → true. RTK Query's `reset`
+  // is a fresh reference on every render, so including it in deps would
+  // re-fire this effect after the mutation resolves and wipe the
+  // just-flipped isSuccess state (the visitor would see the modal snap
+  // back to step 1 instead of the success screen).
   useEffect(() => {
-    if (open) {
-      setForm({ ...EMPTY_FORM, serviceId: presetServiceId });
-      setStep(1);
-      setShowPhoneErrors(false);
-      reset();
-    }
-  }, [open, presetServiceId, reset]);
+    if (!open) return;
+    setForm({ ...EMPTY_FORM, serviceId: presetServiceId });
+    setStep(1);
+    setShowPhoneErrors(false);
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, presetServiceId]);
 
   function close() {
     dispatch(bookingModalClosed());
@@ -88,6 +93,12 @@ export function BookingModal() {
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+    // Clear the phone error state as soon as the visitor starts fixing
+    // the offending fields — otherwise the red border/message linger
+    // after the value is already valid.
+    if (key === "phone" || key === "phoneCountry" || key === "whatsapp" || key === "whatsappCountry") {
+      setShowPhoneErrors(false);
+    }
   }
 
   function step4Valid(): boolean {
@@ -101,7 +112,11 @@ export function BookingModal() {
     if (step === 1) return !!form.serviceId;
     if (step === 2) return !!form.vehicleType;
     if (step === 3) return !!form.preferredDate && !!form.preferredTime;
-    if (step === 4) return step4Valid();
+    // Step 4: enable the button as long as the required fields have any
+    // value at all, and rely on handleNext to reveal validation errors
+    // if the phone number is malformed. If Continue were disabled here
+    // the user has no visible reason for why they're stuck.
+    if (step === 4) return !!form.customerName.trim() && !!form.phone;
     return true;
   }
 
@@ -115,6 +130,13 @@ export function BookingModal() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    // Only actually book when the visitor is on the review step —
+    // otherwise (pressing Enter in a text input inside the form) treat
+    // it as "next step" so we don't skip the review.
+    if (step < TOTAL_STEPS) {
+      handleNext();
+      return;
+    }
     if (!step4Valid()) {
       setShowPhoneErrors(true);
       setStep(4);
@@ -196,13 +218,17 @@ export function BookingModal() {
 
                 <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-y-auto">
                   <div className="flex-1 px-8 py-8">
-                    <AnimatePresence mode="wait">
+                    {/* No AnimatePresence: mode="wait" plus a hidden-tab RAF
+                        throttle can strand the exit animation, leaving the
+                        old step's content in the DOM under the new step's
+                        heading. Instead re-key the motion.div directly so
+                        React remounts on step change with a subtle fade-in. */}
+                    <div>
                       <motion.div
                         key={step}
                         initial={{ opacity: 0, x: 16 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -16 }}
-                        transition={{ duration: 0.35, ease }}
+                        transition={{ duration: 0.3, ease }}
                       >
                         {step === 1 && (
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -286,6 +312,7 @@ export function BookingModal() {
                                 min={new Date().toISOString().split("T")[0]}
                                 value={form.preferredDate}
                                 onChange={(e) => update("preferredDate", e.target.value)}
+                                style={{ colorScheme: "dark" }}
                                 className="w-full border border-nvn-line bg-transparent px-4 py-3 text-nvn-white outline-none focus:border-nvn-red"
                               />
                             </div>
@@ -320,6 +347,8 @@ export function BookingModal() {
                               value={form.customerName}
                               onChange={(v) => update("customerName", v)}
                               required
+                              placeholder={isArabic ? "الاسم الكامل" : "Full name"}
+                              autoComplete="name"
                             />
                             <PhoneField
                               label={t("booking.fields.phone")}
@@ -329,6 +358,7 @@ export function BookingModal() {
                               onValueChange={(v) => update("phone", v)}
                               required
                               showError={showPhoneErrors}
+                              isArabic={isArabic}
                             />
                             <PhoneField
                               label={t("booking.fields.whatsapp")}
@@ -337,6 +367,7 @@ export function BookingModal() {
                               value={form.whatsapp}
                               onValueChange={(v) => update("whatsapp", v)}
                               showError={showPhoneErrors && !!form.whatsapp}
+                              isArabic={isArabic}
                             />
                             <div>
                               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest2 text-nvn-silver">
@@ -361,32 +392,38 @@ export function BookingModal() {
                                 label={t("booking.step1.label")}
                                 value={selectedService ? pick(selectedService.nameEn, selectedService.nameAr) : "—"}
                                 onEdit={() => setStep(1)}
+                                editLabel={t("booking.edit")}
                               />
                               <SummaryRow
                                 label={t("booking.step2.label")}
                                 value={vehicleSummary || "—"}
                                 onEdit={() => setStep(2)}
+                                editLabel={t("booking.edit")}
                               />
                               <SummaryRow
                                 label={t("booking.step3.label")}
                                 value={`${form.preferredDate} · ${form.preferredTime}`}
                                 onEdit={() => setStep(3)}
+                                editLabel={t("booking.edit")}
                               />
                               <SummaryRow
                                 label={t("booking.fields.name")}
                                 value={form.customerName || "—"}
                                 onEdit={() => setStep(4)}
+                                editLabel={t("booking.edit")}
                               />
                               <SummaryRow
                                 label={t("booking.fields.phone")}
                                 value={form.phone ? `${form.phoneCountry} ${normalizePhone(form.phone)}` : "—"}
                                 onEdit={() => setStep(4)}
+                                editLabel={t("booking.edit")}
                               />
                               {form.whatsapp && (
                                 <SummaryRow
                                   label={t("booking.fields.whatsapp")}
                                   value={`${form.whatsappCountry} ${normalizePhone(form.whatsapp)}`}
                                   onEdit={() => setStep(4)}
+                                  editLabel={t("booking.edit")}
                                 />
                               )}
                               {form.notes && (
@@ -394,6 +431,7 @@ export function BookingModal() {
                                   label={t("booking.fields.notes")}
                                   value={form.notes}
                                   onEdit={() => setStep(4)}
+                                  editLabel={t("booking.edit")}
                                 />
                               )}
                             </div>
@@ -402,7 +440,7 @@ export function BookingModal() {
                           </div>
                         )}
                       </motion.div>
-                    </AnimatePresence>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between border-t border-nvn-line px-8 py-6">
@@ -446,6 +484,16 @@ export function BookingModal() {
                 </div>
                 <h3 className="font-display text-3xl tracking-wide text-nvn-white">{t("booking.successTitle")}</h3>
                 <p className="max-w-sm text-sm text-nvn-silver">{t("booking.successBody")}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="mt-2 border border-nvn-line px-8 py-3 text-xs font-semibold uppercase tracking-widest2 text-nvn-white hover:border-nvn-red hover:text-nvn-red"
+                >
+                  {t("booking.close")}
+                </button>
               </div>
             )}
           </motion.div>
@@ -461,12 +509,16 @@ function Field({
   onChange,
   required,
   type = "text",
+  placeholder,
+  autoComplete,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   required?: boolean;
   type?: string;
+  placeholder?: string;
+  autoComplete?: string;
 }) {
   return (
     <div>
@@ -475,14 +527,26 @@ function Field({
         type={type}
         value={value}
         required={required}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-nvn-line bg-transparent px-4 py-3 text-nvn-white outline-none focus:border-nvn-red"
+        className="w-full border border-nvn-line bg-transparent px-4 py-3 text-nvn-white outline-none placeholder:text-nvn-silver/40 focus:border-nvn-red"
       />
     </div>
   );
 }
 
-function SummaryRow({ label, value, onEdit }: { label: string; value: string; onEdit?: () => void }) {
+function SummaryRow({
+  label,
+  value,
+  onEdit,
+  editLabel,
+}: {
+  label: string;
+  value: string;
+  onEdit?: () => void;
+  editLabel: string;
+}) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3">
       <div className="min-w-0 flex-1">
@@ -495,7 +559,7 @@ function SummaryRow({ label, value, onEdit }: { label: string; value: string; on
           onClick={onEdit}
           className="shrink-0 text-[10px] font-semibold uppercase tracking-widest2 text-nvn-red transition-colors hover:text-white"
         >
-          Edit
+          {editLabel}
         </button>
       )}
     </div>

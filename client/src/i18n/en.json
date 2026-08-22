@@ -127,6 +127,7 @@
     "step4": { "label": "Your Details", "title": "How can we reach you?" },
     "step5": { "label": "Confirmation", "title": "Review and confirm" },
     "reviewIntro": "Please review your booking details. Tap Edit on any row to change it, or Confirm Booking to send.",
+    "edit": "Edit",
     "fields": {
       "vehicleType": "Vehicle Type",
       "vehicleMake": "Make",
